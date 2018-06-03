@@ -5,13 +5,9 @@ import threading
 
 
 class LazyModel:
-    def __init__(self, camera, gui=None, server=None, lann=None):
+    def __init__(self, gui=None, server=None, lann=None):
         print('starting LazyModel.py')
-        self.camera = camera
         self.gui = gui
-        self.camera.resolution = (800, 608)
-        self.camera.rotation = 180
-        self.camera.framerate = 10
         self.img_path = './images'
         self.s = server
         self.lann = lann
@@ -32,10 +28,10 @@ class LazyModel:
         print('LazyModel:prediction started')
         while (not self.stop):
             starttime = time.time()
-            conclusion = self.lann.predictme('./images/' + files[-1])
+            conclusion = self.lann.predictme()
             end = time.time()
             print('===========================================')
-            print(end - starttime)
+            print('Time of Prediction:',end - starttime)
             print('===========================================')
         print('LazyModel:predict stopped')
 
@@ -93,7 +89,8 @@ class LazyModel:
         print('LazyModel: Resuming...')
         self.stop = False
         self.check_if_dir_exists()
-        self.t2.start()
+        if not self.t2:
+            self.t2=threading.Thread(target=self.predict).start()
 
     def stop_all(self):
         self.stop = True

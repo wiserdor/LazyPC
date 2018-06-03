@@ -9,9 +9,9 @@ g = GUI(lnn).start()
 while not os.path.isfile('./Models/lazy_mod.h5py'):
     time.sleep(2)
 
-from RPIClient import RPIClient
+from ClientPC import ClientPC
 
-s = RPIClient()
+s = ClientPC()
 s.connect()
 
 from LazyModel import LazyModel
