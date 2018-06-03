@@ -1,17 +1,19 @@
 import cv2
 import keras
+import shutil
 from keras import Model
 from keras.models import Sequential,load_model
 import os
 import numpy as np
 import tensorflow as tf
-
+import time
 
 class LazyNN:
 
     def __init__(self):
         self.xs = None
         self.ys = None
+        self.pred=''
         self.num_Of_Classes = 6
         self.dense_size = 8
         self.is_training=False
@@ -29,11 +31,23 @@ class LazyNN:
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
+
+    def reset(self):
+        if os.path.isdir(self.path):
+            shutil.rmtree(self.path)
+        os.mkdir(self.path)
+        for i in range(self.num_Of_Classes):
+            os.mkdir(self.path+'/'+str(i))
+        self.img_num=0
+        self.xs = None
+        self.ys = None
+        self.pred=''
+
     def capture(self, label):
         cam = cv2.VideoCapture(0)
         cv2.namedWindow("train")
 
-        for i in range(100):
+        for i in range(50):
             ret, frame = cam.read()
             cv2.imshow("train", frame)
             if not ret:
@@ -46,6 +60,7 @@ class LazyNN:
             cv2.imwrite(self.path + '/' + label + '/' + img_name, frame)
             print("{} written!".format(img_name))
             self.img_num += 1
+
 
         cam.release()
         cv2.destroyAllWindows()
@@ -125,16 +140,23 @@ class LazyNN:
             print(output)
             if output == 0:
                 print("left")
+                self.pred="left"
             elif output == 1:
                 print("right")
+                self.pred="right"
             elif output == 2:
                 print("up")
+                self.pred="up"
             elif output == 3:
                 print("down")
+                self.pred="down"
             elif output == 4:
                 print("stop")
+                self.pred="stop/play"
             elif output == 5:
                 print("doing nothing")
+                self.pred="doing nothing"
+
             print('===========================================')
 
             cam.release()

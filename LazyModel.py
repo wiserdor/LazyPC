@@ -2,8 +2,7 @@ import time
 import os
 import shutil
 import threading
-
-
+from collections import Counter
 class LazyModel:
     def __init__(self, gui=None, server=None, lann=None):
         print('starting LazyModel.py')
@@ -13,6 +12,7 @@ class LazyModel:
         self.lann = lann
         self.stop = False
         self.lock = threading.Lock()
+        self.labels={'0':'left','1':'right','2':'up','3':'down','4':'standing'}
 
     def remove_file(self, file_path):
         os.remove(file_path)
@@ -25,11 +25,18 @@ class LazyModel:
     # lock.release()
 
     def predict(self):
+        p_list=[]
         print('LazyModel:prediction started')
+        final_output=[]
         while (not self.stop):
             starttime = time.time()
             conclusion = self.lann.predictme()
             end = time.time()
+            p_list.append(str(conclusion))
+            if len(p_list)==4:
+                final_output=Counter(p_list)
+                #self.s.send(list(str(final_output.most_common(1)[0][0]))[1])
+                p_list=[]
             print('===========================================')
             print('Time of Prediction:',end - starttime)
             print('===========================================')

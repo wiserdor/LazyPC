@@ -18,6 +18,7 @@ class ClientPC:
                 # print(msg,'\n')
                 ##                if "Connection is now available" in msg:
                 ##                    self.connected=True
+                time.sleep(8)
                 self.connected = True
             except OSError:  # Possibly client has left the chat.
                 break
@@ -46,8 +47,8 @@ class ClientPC:
         receive_thread = Thread(target=self.receive)
         receive_thread.start()
         print('Connected to server: ', ip, ':', port, 'successfully')
-        self.sock.sendall('new@gmail.com 123 rasp'.encode() + '\r\n'.encode())
+        self.sock.sendall('segev@gmail.com 123 rasp'.encode() + '\r\n'.encode())
 
-if __name__=='__main__':
-    s=RPIClient()
-    s.connect()
+#
+# s=RPIClient()
+# s.connect()

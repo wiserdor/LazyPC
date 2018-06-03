@@ -9,9 +9,20 @@ class GUI(threading.Thread):
     def __init__(self, lazynn=None):
         threading.Thread.__init__(self)
         self.lazynn = lazynn
+        self.predict=''
+        self.lock = threading.Lock()
+
 
     def execute(self):
         threading.Thread(target=self.train_model).start()
+
+    def change_text(self):
+        while True:
+            self.lock.acquire()
+            if self.lazynn.pred != '':
+                self.label['text']=self.lazynn.pred
+                self.predict=self.lazynn.pred
+            self.lock.release()
 
     def run(self):
         self.win = tk.Tk()
@@ -28,14 +39,18 @@ class GUI(threading.Thread):
                                       font=tkinter.font.Font(family='Helvetica', size=36, weight='bold'),
                                       foreground='white', command=self.execute, height=1, width=5, background='gray')
         self.train_button.place(relx=0.5, rely=0.5, anchor='center')
+        threading.Thread(target=self.change_text).start()
         tk.mainloop()
 
     def train_model(self):
+        self.lock.acquire()
+        self.lazynn.is_training=True
+        self.lazynn.reset()
         self.label['text'] = 'Get ready...'
         self.lazynn.is_training = True
         if os.path.isfile('./Models/lazy_mod.h5py'):
             time.sleep(10)
-        cl_list = ['left', 'right', 'up', 'down', 'ok']
+        cl_list = ['left', 'right', 'up', 'down', 'ok','noise']
         print("training...")
         self.label.config(text="Lets Start...")
         time.sleep(2)
@@ -56,8 +71,8 @@ class GUI(threading.Thread):
         self.lazynn.train()
         self.label['text'] = 'We all set (='
         print('training finished')
-        self.is_training = False
-
+        self.lazynn.is_training = False
+        self.lock.release()
 
 if __name__ == '__main__':
     g = GUI()
